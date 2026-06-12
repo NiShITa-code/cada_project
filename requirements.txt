@@ -1,0 +1,12 @@
+# Gate 2 (text-only) needs just the API client + numpy/sklearn for stats.
+openai>=1.30.0          # OpenAI-compatible client (works for OpenRouter/Together/Fireworks/DeepInfra/local vLLM)
+scikit-learn>=1.3.0     # metrics, bootstrap helpers
+numpy>=1.24.0
+pandas>=2.0.0
+python-dotenv>=1.0.0    # load .env at gate-script startup so users don't need to export env vars manually
+
+# Gate 0 / behavioral phase (Linux only):
+#   strace        -> apt-get install strace      (validated path, works today)
+#   Tetragon/Falco-> eBPF runtime (real instrument; needs privileged Linux VM)
+#   docker        -> to run RedCode-Exec payloads in isolation
+# These are system packages, not pip — see REQUIREMENTS_APIS_COMPUTE.md

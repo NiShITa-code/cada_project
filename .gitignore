@@ -1,0 +1,47 @@
+# secrets
+.env
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# tooling
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# data & large artifacts (tracked dirs keep a .gitignore; contents ignored)
+/data/*
+!/data/.gitignore
+!/data/benign_real_corpus.json          # our derived benign corpus (provenance-tagged) — versioned with the paper
+/results/gate0_workspace/
+
+# run logs (regenerable); KEEP the *.jsonl/*.json/*.txt results
+results/headtohead_runs/*.log
+results/*.log
+
+# nested git checkouts / scratch (external; see REPRODUCE.md §2)
+cada_project/.git/
+_ros_tmp/
+__MACOSX/
+
+# JS deps + large binaries (regenerable / not part of the research artifact)
+node_modules/
+*.pdf
+*.tgz
+*.zip
+*.html
+.claude/
+
+# external / nested git checkouts (ControlArena clone, old cada_project) — not our artifact
+tools/
+cada_project/
+
+# OS
+.DS_Store

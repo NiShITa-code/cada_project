@@ -1,0 +1,9 @@
+# Exact versions used for the cada head-to-head run (Azure VM, 2026-06-12). pip install -r this.
+openai==2.41.1
+numpy==2.2.6
+scipy==1.15.3
+scikit-learn==1.7.2
+matplotlib==3.10.9
+python-dotenv==1.2.2
+requests==2.25.1
+PyYAML==5.4.1

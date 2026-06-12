@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "cada: Obfuscation-robust behavioural vs. textual monitoring of code agents"
+version: 0.1.0
+date-released: 2026-06-02
+authors:
+  - family-names: "Jain"
+    given-names: "Nishita"
+    email: "upmnotion@gmail.com"
+keywords:
+  - ai-safety
+  - llm-agents
+  - monitoring
+  - obfuscation
+  - ebpf
+license: MIT
+repository-code: "https://github.com/NiShITa-code/cada_project"
