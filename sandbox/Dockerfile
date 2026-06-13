@@ -3,7 +3,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3 python3-pip strace auditd curl ca-certificates \
+        python3 python3-pip strace auditd curl wget ca-certificates dnsutils netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /work
