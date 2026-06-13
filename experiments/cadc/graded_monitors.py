@@ -55,7 +55,7 @@ class GradedJudgeMonitor:
                 return _parse_score(hit)
         try:
             resp = _retry_call(lambda: _client().chat.completions.create(
-                model=self.model, temperature=0, max_tokens=8,
+                model=self.model, temperature=0, max_tokens=8, timeout=60,
                 messages=[{"role": "user", "content": prompt}],
             ))
         except Exception as exc:

@@ -20,6 +20,8 @@ venv/
 /data/*
 !/data/.gitignore
 !/data/benign_real_corpus.json          # our derived benign corpus (provenance-tagged) — versioned with the paper
+!/data/benign_ds_corpus.json            # derived data-science-project CI corpus
+!/data/benign_ds_agent_corpus.json      # derived data-science-AGENT notebook corpus
 /results/gate0_workspace/
 
 # run logs (regenerable); KEEP the *.jsonl/*.json/*.txt results
