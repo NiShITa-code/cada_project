@@ -1,86 +1,71 @@
-# CADA v2 — Behavioral vs. Textual Monitoring of LLM Code-Agents under Obfuscation
+# cada — Can you monitor a capable AI agent? (text guardrails vs. syscall monitors, under obfuscation)
 
-> **Note on this branch.** This `redesign-v2` branch supersedes the Stage-0 design on
-> `main`. During a feasibility audit we found three design-level confounds in the original
-> text+sandbox *fusion* plan and corrected them (see **What changed & why** below). The
-> corrected work is a **control evaluation**, not a fusion-vs-GPT-4o leaderboard chase.
+**A head-to-head of representation-level (text/LLM-judge) vs. effect-level (syscall/eBPF) monitoring of LLM
+code-agents, on real executed attacks under an obfuscation ladder.** Short answer: **neither is deployable.**
 
-**Author:** Nishita Jain · **Status:** feasibility validated, motivation experiment in progress · **License:** MIT
+*Author: Nishita Jain · solo BlueDot project · MIT · everything below reproduces from this repo.*
+
+📄 Paper: [`paper/cada_paper.md`](paper/cada_paper.md) · 📝 Blog: [`paper/blog_lesswrong.md`](paper/blog_lesswrong.md) · 🔁 Repro: [`REPRODUCE.md`](REPRODUCE.md)
 
 ---
 
 ## The question
-On a real-execution code-agent benchmark, does a kernel-level (**eBPF**) **behavioral**
-monitor detect programmatically-obfuscated malicious actions that **text** guardrails
-(Llama Guard 4, judges) miss — at what false-positive cost — and where does an adaptive,
-**sandbox-aware** agent defeat it?
+As LLM agents get real privileges (shell, credentials), the standard safety mechanism is a **monitor**. Two
+families: read what the agent *says* (a text/LLM-judge guardrail) or watch what it *does* (a syscall monitor).
+The common intuition — "obfuscation fools text guardrails, so just watch the syscalls" — turns out to be wrong.
+We measured it.
 
-Hypotheses: **H1** text degrades under obfuscation · **H2** behavior is obfuscation-invariant ·
-**H3 (key)** the behavioral advantage collapses under sandbox-aware evasion · **H4** a cheap
-text→detonation cascade recovers most detection at a fraction of the cost.
+## Findings (n = 100 real attacks / 120 real benign, executed under `strace` + an egress sinkhole)
+- **Text guardrails are in a *decoding arms race*.** GPT-4o's discrimination collapses **0.81 → 0.30 AUROC**
+  under one line of `base64`; a frontier model (Claude 4.6) decodes base64 (0.82) but loses to **XOR**,
+  over-flags 80% of benign, and refuses ~15%. The adversary just picks an encoding the model can't decode.
+- **Syscall monitors are decode-free but blind and noisy.** Invariant to obfuscation, but **blind to ~51%** of
+  harms (no syscall signature), can't run below **4% FPR**, and the false-positive rate hits **38% on real
+  data-science-agent commands** — legit dataset downloads are syscall-indistinguishable from exfiltration.
+- **A frontier LLM bypasses the syscall monitor autonomously in ~1 turn** (DNS-tunnel; 5/5, 0 refusals,
+  exfiltration verified at the sink).
 
-## What changed & why (vs. `main` / Stage-0)
-| Stage-0 (deprecated) | Problem | v2 correction |
-|---|---|---|
-| Obfuscate only *unsafe* actions | **Label leakage** — marker ≡ label | Obfuscate **both** classes; oracle labels |
-| R-Judge / AgentDojo as behavioral substrate | Static transcripts / simulated tools → **no syscalls** | **RedCode-Exec** (real Docker execution) |
-| "Fusion matches GPT-4o", raw F1 | Ignores detonation cost; F1 ill-defined on all-positive | **Recall @ fixed FPR**; judges = cost ceiling |
-| 28-feature Phi via strace | Hand-rolled, fragile | **eBPF (Tetragon/Falco)**; strace validated the mechanism |
-| (none) | Strawman adversary | **Adaptive sandbox-aware red team** = the contribution |
+![arms race](paper/figures/fig4_armsrace.png)
+![FP-tax scales with autonomy](paper/figures/fig5_crossdomain.png)
 
-## Status — feasibility result (Gate 0/1, real syscall traces)
-Behavioral recall **1.00** vs. text **0.50** on the obfuscated-malicious set, **0** false
-positives, with the syscall feature invariant across all 6 obfuscations. Validates the
-*mechanism* (H1+H2). Caveat: strace proxy, micro-scale, keyword stub — the real numbers
-come from Gates 2/3/0-real below.
+**Net:** at a 1% deployment FPR there is no single deployable monitor. Relevance to AI safety: the *AI-control*
+plan for deploying untrusted agents rests on monitoring — this maps where the monitoring holes actually are.
 
-## Install
+## Reproduce
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-cp .env.example .env          # add your OpenRouter (or other) LLM key
-pytest && ruff check .        # 22 tests, lint clean
+pip install -r experiments/cadc/requirements.lock.txt      # pinned deps
+# the LLM-monitor numbers reproduce from the shipped cache with ZERO API calls:
+python -m experiments.cadc.analyze_headtohead main 0.05 --boot
+python -m experiments.cadc.frontier_report main
+python -m experiments.cadc.make_figures main && python -m experiments.cadc.make_figures2
+# full from-scratch run (needs a Linux Docker host; see REPRODUCE.md):
+bash experiments/cadc/make_all.sh
+```
+Raw per-attack data: `results/headtohead_runs/main.jsonl` (2200 cells). Every number has an artifact + an
+independent recompute. **Verify-the-artifact:** 98% of attacks provably executed (0 phantom catches).
+
+## What's here
+```
+paper/        cada_paper.md (the write-up) · blog_lesswrong.md · figures/
+experiments/cadc/
+  headtohead_main.py    run the grid (behavioral + GPT-4o + Llama Guard)
+  graded_monitors.py    graded LLM judge · static_monitors.py (regex twin)
+  blue_team.py monitor_family.py   syscall behavioral monitor (C1..C6 configs)
+  falco_baseline.py     industry eBPF baseline · evasion_autonomous.py (LLM red-team)
+  cross_domain_fptax.py build_ds_agent_benign.py   the FP-tax-vs-autonomy result
+  analyze_headtohead.py frontier_report.py make_figures*.py   metrics + figures
+results/      AUDIT_FINDINGS.md (the integrity audit) · headtohead_runs/*.jsonl
+methodology/  PREREG_next_level.md (pre-registered next experiments)
 ```
 
-## Data
-```bash
-git clone https://github.com/AI-secure/RedCode  data/RedCode    # risky actions (positives)
-git clone https://github.com/Lordog/R-Judge      data/R-Judge    # Gate-3 anchor
-```
-RedCode-Exec is *all-risky*; benign negatives come from `cada.data.benign_actions()` so the
-false-positive rate is measurable.
+## Honest status & limitations
+- Modest scale (n=100/120, single seed, one obfuscator); behavioral coverage uses `strace` (misses io_uring/raw
+  sockets); "74% blind" is ~51% structural + ~22% unmanifested in our generic sandbox. We do **not** claim agents
+  are "fundamentally unmonitorable" — only the measured trends. (One early over-claim — that the text collapse was
+  universal — was caught by an audit and corrected to "model-dependent"; see `results/AUDIT_FINDINGS.md`.)
+- **Next (pre-registered, `methodology/PREREG_next_level.md`):** a *hybrid* monitor that feeds de-obfuscated
+  runtime arguments to a judge (decode-free **and** semantic) — with success/partial/**null** criteria fixed in
+  advance. A null ("not even argument-inspection escapes the FP-tax") would be a stronger result, not a weaker one.
 
-## Kill-gate order (run in this order)
-```bash
-# Gate 3 — validate the judge harness against R-Judge GPT-4o = 74.45% F1
-python -m experiments.gate3_rjudge_repro --rjudge data/R-Judge --limit 20
-
-# Gate 2 — THE motivation run: does Llama Guard 4 degrade under obfuscation?
-python -m experiments.gate2_text_monitors --redcode data/RedCode
-
-# Gate 0-real — eBPF + RedCode execution (privileged Linux VM; strace path runs anywhere)
-python -m experiments.gate0_runner
-```
-
-## Layout
-```
-cada/            installable package
-  obfuscation.py   both-class transform suite (+ held-out family)
-  metrics.py       fixed-FPR operating points + obfuscation-gap table
-  data.py          RedCode loader + benign negatives + Action type
-  rjudge.py        faithful R-Judge protocol (loader, prompts, parsing)
-  monitors/        text.py (Llama Guard 4 / judge / stub) · behavioral.py (strace + eBPF hook)
-experiments/       gate2 (text gap) · gate3 (R-Judge anchor) · gate0_runner (behavioral)
-methodology/       full plan, threat model, failure atlas, kill-gates
-tests/             22 unit tests
-```
-
-## Compute
-Gates 2 & 3 need **one API key, no GPU** (OpenRouter serves Llama Guard 4 + judges). The eBPF
-phase needs a **root Linux VM** (not a rootless Vast/Lightning container); a GPU is only needed
-to self-host open guardrails. Whole thing fits a ~$200 grant.
-
-## Reproducibility
-Code, prompts, configs, raw outputs released MIT — **regardless of result direction**.
-
-Cite via `CITATION.cff`.
+Feedback / "you're wrong because…" very welcome — the repo runs in one command and I'd love someone to break the
+hybrid before I build it.
