@@ -9,6 +9,7 @@
 !RESULTS_ablation_judgeprompt.md
 !RESULTS_capability_ladder.md
 !RESULTS_exp_h.md
+!RESULTS_exp_e.md
 !NOVELTY_CHECK.md
 !RESULTS_blindspot.md
 # --- current-paper data + caches + summaries + trace tarball (reproducibility) ---
@@ -21,6 +22,8 @@ headtohead_runs/*
 !headtohead_runs/main.crossdomain.jsonl
 !headtohead_runs/main.haiku.jsonl
 !headtohead_runs/exp_h.capture.jsonl
+!headtohead_runs/exp_e.jsonl
+!headtohead_runs/exp_e.summary.json
 !headtohead_runs/*.summary.json
 !headtohead_runs/main.textcache.json
 !headtohead_runs/main.claude_cache.json

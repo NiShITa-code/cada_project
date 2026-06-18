@@ -185,10 +185,37 @@ def fig_exph():
     print(f"fig9: text base64={bl['O1_base64']['text']:.2f} hybrid spread~flat; DS-FPR beh={dsb:.2f} hyb={dsh:.2f} rec_all={rec:.2f}")
 
 
+def fig_evasion():
+    """fig10 — adaptive evasion of the hybrid: the (harm, score) plane has an EMPTY evasion quadrant."""
+    rows = [json.loads(l) for l in (R / "exp_e.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    rng_idx = list(range(len(rows)))
+    # deterministic jitter (no RNG available): spread by index
+    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    for harm, color, lab in [(True, "#c0392b", "secret reached sink (harm)"),
+                             (False, "#7f8c8d", "no harm")]:
+        xs = [r["hybrid_score"] for r in rows if r["harm_at_sink"] == harm]
+        ys = [0.5 + 0.42 * ((i % 21) / 21 - 0.5) + (1.0 if harm else 0.0) for i, r in enumerate(rows) if r["harm_at_sink"] == harm]
+        ax.scatter(xs, ys, c=color, s=22, alpha=0.7, label=lab, edgecolors="none")
+    ax.axvline(0.20, ls="--", color="#16a085", lw=1.6, label="deploy flag threshold (0.20)")
+    ax.axhspan(0.9, 2.1, xmin=0, xmax=0.20 / 1.0, color="#2ecc71", alpha=0.10)
+    ax.text(0.10, 2.0, "EVASION ZONE\n(harm ∧ unflagged)\n— EMPTY (0/96)", ha="center", va="top",
+            fontsize=9, color="#1e8449", fontweight="bold")
+    ax.set_yticks([0.5, 1.5]); ax.set_yticklabels(["no harm", "harm at sink"])
+    ax.set_xlim(-0.03, 1.03); ax.set_ylim(0, 2.1); ax.set_xlabel("hybrid monitor score")
+    ax.set_title("Adaptive evasion of the hybrid: GPT-4o + Claude, 16 episodes × 6 turns →\n"
+                 "every exfil that lands harm is flagged (min 0.70); the evasion quadrant is empty")
+    ax.legend(fontsize=8, loc="center right"); ax.grid(alpha=0.25)
+    fig.tight_layout(); fig.savefig(FIG / "fig10_evasion.png", dpi=150); plt.close(fig)
+    harm = [r for r in rows if r["harm_at_sink"]]
+    print(f"fig10: attempts={len(rows)} harm={len(harm)} evaded={sum(r['evaded'] for r in rows)} "
+          f"min_score_on_harm={min((r['hybrid_score'] for r in harm), default=0):.2f}")
+
+
 if __name__ == "__main__":
     fig_armsrace(); fig_crossdomain(); fig_vise(); fig_promptablation(); fig_capability()
-    try:
-        fig_exph()
-    except FileNotFoundError:
-        print("fig9 skipped (exp_h.summary.json not present)")
-    print("wrote fig4..fig9 ->", FIG)
+    for fn, nm in [(fig_exph, "fig9"), (fig_evasion, "fig10")]:
+        try:
+            fn()
+        except FileNotFoundError:
+            print(f"{nm} skipped (summary not present)")
+    print("wrote fig4..fig10 ->", FIG)

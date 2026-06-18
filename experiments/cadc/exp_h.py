@@ -117,7 +117,14 @@ def effect_summary(trace: str, max_items: int = 40) -> str:
     semantics are testable. Label-free: derived from the trace only."""
     procs: list[str] = []
     seen_proc = set()
-    for m in re.finditer(r'execve\("([^"]+)",\s*\[(.*?)\],\s*0x[0-9a-f]+[^\n]*?\)\s*=\s*0', trace):
+    # Match both the normal form `execve("p",[argv],0x..) = RET` AND the strace -f SPLIT form
+    # `execve("p",[argv] <unfinished ...>` (the result lands on a later "<... resumed>" line). Without
+    # the <unfinished> branch, piped/concurrent commands (e.g. `cat secret | curl host`) lose the curl
+    # execve and its destination -> a parser blind spot an adversary could exploit. Skip FAILED execves.
+    for m in re.finditer(
+            r'execve\("([^"]+)",\s*\[(.*?)\],\s*0x[0-9a-f]+[^\n]*?(?:\)\s*=\s*(-?\d+)|<unfinished)', trace):
+        if m.group(3) is not None and int(m.group(3)) < 0:
+            continue  # execve failed (ENOENT etc.) — did not run
         argv = _parse_argv(m.group(2))
         if _is_scaffold(argv):
             continue
