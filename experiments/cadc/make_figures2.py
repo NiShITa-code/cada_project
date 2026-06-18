@@ -100,6 +100,30 @@ def fig_vise():
     print(f"fig6: behavioral pts={[(round(a,3),round(b,2)) for a,b in pts]}  falco=({f_fpr:.3f},{f_rec:.2f})")
 
 
+def fig_promptablation():
+    """fig7 — steelman decode-prompt vs original judge across encodings (the prompt lever)."""
+    s = json.loads((R / "main.ablation_strong.summary.json").read_text(encoding="utf-8"))
+    order = ["O0_clean", "O1_base64", "X3_xor"]
+    lab = ["clean", "base64\n(decodable)", "XOR\n(not decodable)"]
+    rows = {r["level"]: r for r in s["levels"]}
+    weak = [rows[l]["auroc_weak"] for l in order]
+    strong = [rows[l]["auroc_strong"] for l in order]
+    x = np.arange(len(order)); w = 0.36
+    fig, ax = plt.subplots(figsize=(6.6, 4.2))
+    ax.bar(x - w / 2, weak, w, color="#95a5a6", label="original judge prompt")
+    ax.bar(x + w / 2, strong, w, color="#c0392b", label="steelman decode-prompt")
+    ax.axhline(0.5, ls="--", color="gray", lw=1, label="chance")
+    for i, (a, b) in enumerate(zip(weak, strong)):
+        ax.text(i - w / 2, a + 0.01, f"{a:.2f}", ha="center", fontsize=9)
+        ax.text(i + w / 2, b + 0.01, f"{b:.2f}", ha="center", fontsize=9, fontweight="bold")
+    ax.set_xticks(x); ax.set_xticklabels(lab)
+    ax.set_ylabel("AUROC (attack vs benign)"); ax.set_ylim(0.2, 1.0)
+    ax.set_title("Prompt lever: a steelman decode-prompt recovers base64 but is\ndefeated by XOR (collapses to chance)")
+    ax.legend(fontsize=8, loc="lower left"); ax.grid(alpha=0.3, axis="y")
+    fig.tight_layout(); fig.savefig(FIG / "fig7_promptablation.png", dpi=150); plt.close(fig)
+    print("fig7:", {l: (w_, s_) for l, w_, s_ in zip(order, weak, strong)})
+
+
 if __name__ == "__main__":
-    fig_armsrace(); fig_crossdomain(); fig_vise()
-    print("wrote fig4/fig5/fig6 ->", FIG)
+    fig_armsrace(); fig_crossdomain(); fig_vise(); fig_promptablation()
+    print("wrote fig4/fig5/fig6/fig7 ->", FIG)
