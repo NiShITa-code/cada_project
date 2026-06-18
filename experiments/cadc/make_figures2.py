@@ -124,6 +124,33 @@ def fig_promptablation():
     print("fig7:", {l: (w_, s_) for l, w_, s_ in zip(order, weak, strong)})
 
 
+def fig_capability():
+    """fig8 — capability ladder: base64 AUROC rises with capability, XOR stays flat for all."""
+    s = json.loads((R / "main.ladder.summary.json").read_text(encoding="utf-8"))
+    L = s["ladder"]  # Haiku, GPT-4o, Sonnet (ascending within-family for the H/S pair)
+    names = [r["model"] for r in L]
+    x = np.arange(len(names))
+    clean = [r["O0_clean"] for r in L]
+    b64 = [r["O1_base64"] for r in L]
+    xor = [r["X3_xor"] for r in L]
+    fig, ax = plt.subplots(figsize=(7, 4.2))
+    ax.plot(x, clean, "-o", color="#27ae60", lw=2, label="clean")
+    ax.plot(x, b64, "-s", color="#c0392b", lw=2, label="base64 (decodable)")
+    ax.plot(x, xor, "-^", color="#2471a3", lw=2, label="XOR (not decodable)")
+    ax.axhline(0.5, ls="--", color="gray", lw=1, label="chance")
+    for xi, v in zip(x, b64):
+        ax.annotate(f"{v:.2f}", (xi, v), textcoords="offset points", xytext=(0, -14), ha="center", fontsize=8, color="#c0392b")
+    for xi, v in zip(x, xor):
+        ax.annotate(f"{v:.2f}", (xi, v), textcoords="offset points", xytext=(0, 7), ha="center", fontsize=8, color="#2471a3")
+    ax.set_xticks(x); ax.set_xticklabels(names)
+    ax.set_ylabel("judge AUROC (attack vs benign)"); ax.set_ylim(0.2, 1.0)
+    ax.set_title("Capability lifts base64 resistance (0.56→0.82) but NOT XOR (flat ~0.74)\n"
+                 "Haiku-4.5↔Sonnet-4.6 = within-family; GPT-4o = cross-family reference")
+    ax.legend(fontsize=8, loc="lower left"); ax.grid(alpha=0.3)
+    fig.tight_layout(); fig.savefig(FIG / "fig8_capability.png", dpi=150); plt.close(fig)
+    print("fig8:", {r["model"]: (r["O1_base64"], r["X3_xor"]) for r in L})
+
+
 if __name__ == "__main__":
-    fig_armsrace(); fig_crossdomain(); fig_vise(); fig_promptablation()
-    print("wrote fig4/fig5/fig6/fig7 ->", FIG)
+    fig_armsrace(); fig_crossdomain(); fig_vise(); fig_promptablation(); fig_capability()
+    print("wrote fig4..fig8 ->", FIG)
