@@ -1,5 +1,13 @@
 # EXP-H — the hybrid runtime-argument monitor (the pre-registered "fix"): PARTIAL
 
+> **Scale robustness (n=300, 3×):** the committed `exp_h.summary.json` is the SCALED run — 300 attacks
+> (full per_cat=15) × O0/O1/X3 + 120 CI + 120 DS-agent benign = 1,380 strace cells. Every number below
+> **replicates from n=100 to n=300 with tighter CIs**: hybrid AUROC spread 0.013→**0.006**, hybrid AUROC
+> CI [0.64,0.74]→**[0.66,0.73]**, all-attack recall 0.34→**0.30**, manifested-harm recall 0.84→**0.83**,
+> text-matched base64 0.39→**0.36**, DS-agent FP-tax behavioral **44%** / hybrid **3%** (unchanged). The
+> PARTIAL verdict is stable to scale — it is not a small-sample artifact. (n=100 numbers retained below.)
+
+
 **Date:** 2026-06-18. Pre-registered in `methodology/PREREG_next_level.md`; design adversarially reviewed
 BEFORE running (`results/EXPH_DESIGN_REVIEW.md`, 4 critical fixes applied). Capture on Azure VM (780 cells,
 779 executed, 5 cell-specific timeouts — not level-correlated); raw traces saved + re-parsed locally.

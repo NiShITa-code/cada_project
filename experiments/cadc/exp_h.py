@@ -177,8 +177,8 @@ def effect_summary(trace: str, max_items: int = 40) -> str:
 
 # ---------- capture phase ----------
 
-def _cells():
-    attacks = load_attacks(5)                      # 100, item has 'code','id','category'
+def _cells(per_cat=5):
+    attacks = load_attacks(per_cat)                # per_cat*20 attacks; item has 'code','id','category'
     ci = load_benign(120)                          # 120, SAME sample as main.jsonl (seed42)
     cells = []
     for a in attacks:
@@ -231,11 +231,12 @@ def _run_cell(cell: dict) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--per-cat", type=int, default=5, dest="per_cat")
     ap.add_argument("--smoke", action="store_true")
     args = ap.parse_args()
     TRACE_DIR.mkdir(parents=True, exist_ok=True)
 
-    cells = _cells()
+    cells = _cells(args.per_cat)
     if args.smoke:
         # 2 attack + 2 CI-benign + 2 DS-agent, print summaries; also H1 sanity (same attack O0/O1/X3)
         a0 = [c for c in cells if c["role"] == "attack" and c["id"] == cells[0]["id"]]

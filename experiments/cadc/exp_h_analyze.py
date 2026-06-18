@@ -75,13 +75,11 @@ def _prompt(variant, rec):
     return instr + evid.format(x=rec[field])
 
 
-def _judge_one(args):
-    variant, rec, cache = args
+def _api_call(args):
+    """Thread-safe: API call ONLY (no cache write — the JsonCache rewrites the whole file per set,
+    which races under threads). Returns (variant, cellkey, cachekey, verdict_str | None)."""
+    variant, rec, ck = args
     p = _prompt(variant, rec)
-    k = cache.key(MODEL, p, prefix=f"exph_{variant}")
-    hit = cache.get(k)
-    if hit is not None:
-        return variant, rec["key"], (1.0 if hit == REFUSAL else _parse_score(hit)), (hit == REFUSAL)
     try:
         resp = _retry_call(lambda: _client().chat.completions.create(
             model=MODEL, temperature=0, max_tokens=8, timeout=60,
@@ -92,9 +90,8 @@ def _judge_one(args):
         if _is_content_filter_refusal(exc):
             verdict = REFUSAL
         else:
-            return variant, rec["key"], None, False
-    cache.set(k, verdict)
-    return variant, rec["key"], (1.0 if verdict == REFUSAL else _parse_score(verdict)), (verdict == REFUSAL)
+            verdict = None  # transient failure -> don't cache, leave score None
+    return variant, rec["key"], ck, verdict
 
 
 def _strip_net(summary: str) -> str:
@@ -102,8 +99,9 @@ def _strip_net(summary: str) -> str:
 
 
 def rebuild(report_only):
-    # code map for exact full-length obfuscated-command reconstruction (no 400-char truncation)
-    code = {("attack", a["id"]): a["code"] for a in load_attacks(5)}
+    # code map for exact full-length obfuscated-command reconstruction (no 400-char truncation).
+    # load_attacks(30) = the full available corpus -> covers every attack id at any --per-cat scale.
+    code = {("attack", a["id"]): a["code"] for a in load_attacks(30)}
     code.update({("benign", b["id"]): b["code"] for b in load_benign(120)})
     import random
     try:
@@ -150,26 +148,39 @@ def run(report_only):
                 assert tok not in scaffold, f"LEAK: {tok} in {v} prompt scaffolding"
 
     ex = [r for r in rows if r["executed"]]
-    jobs = [(v, r, cache) for r in ex for v in VARIANTS]
     scores = {v: {} for v in VARIANTS}
     refus = {v: 0 for v in VARIANTS}
-    if report_only:
-        for v, r, c in jobs:
-            p = _prompt(v, r)
-            hit = c.get(c.key(MODEL, p, prefix=f"exph_{v}"))
+    # pass 1 (single-threaded): cache reads + collect the uncached jobs
+    api_jobs = []
+    for r in ex:
+        for v in VARIANTS:
+            ck = cache.key(MODEL, _prompt(v, r), prefix=f"exph_{v}")
+            hit = cache.get(ck)
             if hit is not None:
                 scores[v][r["key"]] = 1.0 if hit == REFUSAL else _parse_score(hit)
-    else:
+                if hit == REFUSAL:
+                    refus[v] += 1
+            elif not report_only:
+                api_jobs.append((v, r, ck))
+    # pass 2 (parallel API, NO cache write) + pass 3 (single write)
+    if api_jobs:
+        print(f"  {len(api_jobs)} uncached judge calls", flush=True)
+        new = {}
         done = 0
         with ThreadPoolExecutor(max_workers=8) as exr:
-            for v, key, s, ref in exr.map(_judge_one, jobs):
-                if s is not None:
-                    scores[v][key] = s
-                if ref:
-                    refus[v] += 1
+            for v, key, ck, verdict in exr.map(_api_call, api_jobs):
                 done += 1
                 if done % 400 == 0:
-                    print(f"  judged {done}/{len(jobs)}", flush=True)
+                    print(f"  judged {done}/{len(api_jobs)}", flush=True)
+                if verdict is None:
+                    continue
+                new[ck] = verdict
+                scores[v][key] = 1.0 if verdict == REFUSAL else _parse_score(verdict)
+                if verdict == REFUSAL:
+                    refus[v] += 1
+        cache.store.update(new)
+        cache.path.write_text(json.dumps(cache.store))
+        print(f"  wrote {len(new)} new cache entries (total {len(cache.store)})", flush=True)
 
     for r in ex:
         for v in VARIANTS:
