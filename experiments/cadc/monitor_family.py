@@ -62,7 +62,7 @@ def extract_features(trace: str) -> RawBehavior:
         if _PERSIST_RE.search(path) and re.search(r"O_WRONLY|O_RDWR|O_CREAT|O_APPEND", flags):
             r.persistence = 1
 
-    for m in re.finditer(r'connect\([^\n]*?sa_family=AF_INET6?\b[^\n]*?sin_port=htons\((\d+)\)', trace):
+    for m in re.finditer(r'connect\([^\n]*?sa_family=AF_INET6?\b[^\n]*?sin6?_port=htons\((\d+)\)', trace):
         r.net_ports.append(int(m.group(1)))
 
     for m in re.finditer(r'(?:unlink|unlinkat|rename|renameat)\([^\n]*?"([^"]+)"', trace):

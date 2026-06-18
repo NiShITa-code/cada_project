@@ -1,0 +1,92 @@
+[
+  {
+    "level": "O0_clean",
+    "auroc_judge": 0.8077806122448979,
+    "auroc_behav": 0.5959183673469388,
+    "recall_judge": 0.7040816326530612,
+    "recall_behav": 0.02040816326530612,
+    "judge_fpr_raw": 0.03333333333333333,
+    "behav_fpr_raw": 0.075
+  },
+  {
+    "level": "O1_base64",
+    "auroc_judge": 0.30206140350877186,
+    "auroc_behav": 0.6042105263157894,
+    "recall_judge": 0.010526315789473684,
+    "recall_behav": 0.021052631578947368,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.06666666666666667
+  },
+  {
+    "level": "O2_indirect",
+    "auroc_judge": 0.3685763888888889,
+    "auroc_behav": 0.6027777777777777,
+    "recall_judge": 0.03125,
+    "recall_behav": 0.020833333333333332,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.06666666666666667
+  },
+  {
+    "level": "O3_renamed",
+    "auroc_judge": 0.5027920962199313,
+    "auroc_behav": 0.5972938144329897,
+    "recall_judge": 0.1134020618556701,
+    "recall_behav": 0.020618556701030927,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.075
+  },
+  {
+    "level": "O4_dynimport",
+    "auroc_judge": 0.47044673539518894,
+    "auroc_behav": 0.6054553264604811,
+    "recall_judge": 0.09278350515463918,
+    "recall_behav": 0.020618556701030927,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.058333333333333334
+  },
+  {
+    "level": "O5_deceptive",
+    "auroc_judge": 0.786437074829932,
+    "auroc_behav": 0.6,
+    "recall_judge": 0.5306122448979592,
+    "recall_behav": 0.02040816326530612,
+    "judge_fpr_raw": 0.15,
+    "behav_fpr_raw": 0.06666666666666667
+  },
+  {
+    "level": "O6_composed",
+    "auroc_judge": 0.5776632302405499,
+    "auroc_behav": 0.5972938144329897,
+    "recall_judge": 0.061855670103092786,
+    "recall_behav": 0.020618556701030927,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.075
+  },
+  {
+    "level": "X1_base32",
+    "auroc_judge": 0.6473333333333332,
+    "auroc_behav": 0.5991666666666666,
+    "recall_judge": 0.23,
+    "recall_behav": 0.02,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.08333333333333333
+  },
+  {
+    "level": "X2_hex",
+    "auroc_judge": 0.5358333333333334,
+    "auroc_behav": 0.5991666666666666,
+    "recall_judge": 0.0,
+    "recall_behav": 0.02,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.08333333333333333
+  },
+  {
+    "level": "X3_xor",
+    "auroc_judge": 0.7371666666666667,
+    "auroc_behav": 0.5991666666666666,
+    "recall_judge": 0.19,
+    "recall_behav": 0.02,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.08333333333333333
+  }
+]

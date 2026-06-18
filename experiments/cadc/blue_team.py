@@ -87,7 +87,7 @@ def parse_trace(trace: str) -> Behavior:
     # lookup (benign or not) and must NOT count as egress. We flag a connect only if its
     # destination port is not 53 — i.e., an actual data connection attempt.
     egress = 0
-    for m in re.finditer(r'connect\([^\n]*?sa_family=AF_INET6?\b[^\n]*?sin_port=htons\((\d+)\)', trace):
+    for m in re.finditer(r'connect\([^\n]*?sa_family=AF_INET6?\b[^\n]*?sin6?_port=htons\((\d+)\)', trace):
         if int(m.group(1)) != 53:
             egress = 1
             break

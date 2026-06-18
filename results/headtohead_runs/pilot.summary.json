@@ -1,0 +1,20 @@
+[
+  {
+    "level": "O0_clean",
+    "auroc_judge": 0.8210526315789475,
+    "auroc_behav": 0.6052631578947368,
+    "recall_judge": 0.7368421052631579,
+    "recall_behav": 0.21052631578947367,
+    "judge_fpr_raw": 0.0,
+    "behav_fpr_raw": 0.0
+  },
+  {
+    "level": "O1_base64",
+    "auroc_judge": 0.4157894736842105,
+    "auroc_behav": 0.6052631578947368,
+    "recall_judge": 0.0,
+    "recall_behav": 0.21052631578947367,
+    "judge_fpr_raw": 1.0,
+    "behav_fpr_raw": 0.0
+  }
+]

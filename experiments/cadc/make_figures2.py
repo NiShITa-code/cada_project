@@ -151,6 +151,44 @@ def fig_capability():
     print("fig8:", {r["model"]: (r["O1_base64"], r["X3_xor"]) for r in L})
 
 
+def fig_exph():
+    """fig9 — EXP-H hybrid: fixes BOTH the obfuscation arms race AND the FP-tax, but inherits the blind spot."""
+    s = json.loads((R / "main.ladder.summary.json").read_text(encoding="utf-8"))  # noqa (unused; keep import warm)
+    e = json.loads((R / "exp_h.summary.json").read_text(encoding="utf-8"))
+    bl = e["H1"]["by_level"]
+    levs = ["O0_clean", "O1_base64", "X3_xor"]; xl = ["clean", "base64", "XOR"]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.3))
+    x = np.arange(3)
+    ax1.plot(x, [bl[l]["h_eff"] for l in levs], "-o", color="#16a085", lw=2.2, label="hybrid (resolved effects)")
+    ax1.plot(x, [bl[l]["text"] for l in levs], "-s", color="#c0392b", lw=2, label="text (matched prompt)")
+    ax1.plot(x, [bl[l]["beh"] for l in levs], "-^", color="#2471a3", lw=2, label="behavioral")
+    ax1.axhline(0.5, ls="--", color="gray", lw=1)
+    ax1.set_xticks(x); ax1.set_xticklabels(xl); ax1.set_ylim(0.3, 1.0)
+    ax1.set_ylabel("AUROC (attack vs benign)")
+    ax1.set_title("(a) Obfuscation robustness: hybrid is invariant;\ntext collapses on base64")
+    ax1.legend(fontsize=8, loc="lower left"); ax1.grid(alpha=0.3)
+
+    dsb = e["H3"]["dsa_fpr_behavioral"]; dsh = e["H3"]["dsa_fpr_hybrid"]
+    bars = ax2.bar([0, 1], [dsb, dsh], color=["#2471a3", "#16a085"], width=0.55)
+    ax2.axhline(0.01, ls="--", color="red", lw=1, label="1% deployment FPR")
+    for b, v in zip(bars, [dsb, dsh]):
+        ax2.text(b.get_x() + b.get_width() / 2, v + 0.01, f"{v:.0%}", ha="center", fontweight="bold")
+    ax2.set_xticks([0, 1]); ax2.set_xticklabels(["behavioral", "hybrid"])
+    ax2.set_ylim(0, 0.5); ax2.set_ylabel("DS-agent benign false-positive rate")
+    ax2.set_title("(b) FP-tax on real agent work: hybrid\nfixes it (44%→3%) by reading semantics")
+    ax2.legend(fontsize=8)
+    rec = e["H2"]["h_eff"]["rec_all"]
+    fig.text(0.5, 0.005, f"...but the hybrid still inherits the semantic blind spot: all-attack recall@1%FPR = "
+             f"{rec:.2f} (≈half of attacks have no syscall signature). Outcome: PARTIAL.",
+             ha="center", fontsize=8.5, style="italic")
+    fig.tight_layout(rect=[0, 0.04, 1, 1]); fig.savefig(FIG / "fig9_hybrid.png", dpi=150); plt.close(fig)
+    print(f"fig9: text base64={bl['O1_base64']['text']:.2f} hybrid spread~flat; DS-FPR beh={dsb:.2f} hyb={dsh:.2f} rec_all={rec:.2f}")
+
+
 if __name__ == "__main__":
     fig_armsrace(); fig_crossdomain(); fig_vise(); fig_promptablation(); fig_capability()
-    print("wrote fig4..fig8 ->", FIG)
+    try:
+        fig_exph()
+    except FileNotFoundError:
+        print("fig9 skipped (exp_h.summary.json not present)")
+    print("wrote fig4..fig9 ->", FIG)

@@ -2,3 +2,27 @@
 !.gitignore
 !gate0_FINDINGS.md
 !gate0_results.csv
+# --- current-paper results docs (track) ---
+!AUDIT_FINDINGS.md
+!EXPH_DESIGN_REVIEW.md
+!RESULTS_headtohead.md
+!RESULTS_ablation_judgeprompt.md
+!RESULTS_capability_ladder.md
+!RESULTS_exp_h.md
+# --- current-paper data + caches + summaries + trace tarball (reproducibility) ---
+!headtohead_runs/
+headtohead_runs/*
+!headtohead_runs/main.jsonl
+!headtohead_runs/main.claude.jsonl
+!headtohead_runs/main.falco.jsonl
+!headtohead_runs/main.static.jsonl
+!headtohead_runs/main.crossdomain.jsonl
+!headtohead_runs/main.haiku.jsonl
+!headtohead_runs/exp_h.capture.jsonl
+!headtohead_runs/*.summary.json
+!headtohead_runs/main.textcache.json
+!headtohead_runs/main.claude_cache.json
+!headtohead_runs/main.haiku_cache.json
+!headtohead_runs/main.ablation_strong.textcache.json
+!headtohead_runs/exp_h.judge_cache.json
+!headtohead_runs/exp_h_traces.tgz

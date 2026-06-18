@@ -63,9 +63,11 @@ methodology/  PREREG_next_level.md (pre-registered next experiments)
   sockets); "74% blind" is ~51% structural + ~22% unmanifested in our generic sandbox. We do **not** claim agents
   are "fundamentally unmonitorable" — only the measured trends. (One early over-claim — that the text collapse was
   universal — was caught by an audit and corrected to "model-dependent"; see `results/AUDIT_FINDINGS.md`.)
-- **Next (pre-registered, `methodology/PREREG_next_level.md`):** a *hybrid* monitor that feeds de-obfuscated
-  runtime arguments to a judge (decode-free **and** semantic) — with success/partial/**null** criteria fixed in
-  advance. A null ("not even argument-inspection escapes the FP-tax") would be a stronger result, not a weaker one.
+- **The hybrid fix (built + pre-registered, `RESULTS_exp_h.md`):** a monitor that feeds an LLM judge the
+  *decoded runtime arguments* from the trace is **PARTIAL** — it escapes the obfuscation arms race (invariant)
+  **and** the FP-tax (DS-agent 44%→3%), but inherits the semantic blind spot (all-attack recall 0.34). The
+  observation points can be combined, not transcended. (Design adversarially audited before running:
+  `results/EXPH_DESIGN_REVIEW.md`.)
 
 Feedback / "you're wrong because…" very welcome — the repo runs in one command and I'd love someone to break the
 hybrid before I build it.

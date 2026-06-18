@@ -47,3 +47,4 @@ cada_project/
 
 # OS
 .DS_Store
+results/headtohead_runs/exp_h_traces/
