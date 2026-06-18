@@ -1,0 +1,8 @@
+{
+  "A. runtime-harmful, CAUGHT (egress/secret/destructive fires)": 79,
+  "F. other non-manifesting (unclassified)": 94,
+  "B. recon / read world-readable (no runtime harm)": 88,
+  "C. payload AUTHORED but NOT executed (RedCode code-pattern, no runtime harm)": 12,
+  "D. persistence/privesc via builtin-write (CATCHABLE w/ better parser)": 16,
+  "E. content/bias harm (no runtime signature - FUNDAMENTAL blind spot)": 10
+}
