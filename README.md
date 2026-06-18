@@ -63,11 +63,13 @@ methodology/  PREREG_next_level.md (pre-registered next experiments)
   sockets); "74% blind" is ~51% structural + ~22% unmanifested in our generic sandbox. We do **not** claim agents
   are "fundamentally unmonitorable" — only the measured trends. (One early over-claim — that the text collapse was
   universal — was caught by an audit and corrected to "model-dependent"; see `results/AUDIT_FINDINGS.md`.)
-- **The hybrid fix (built + pre-registered, `RESULTS_exp_h.md`):** a monitor that feeds an LLM judge the
-  *decoded runtime arguments* from the trace is **PARTIAL** — it escapes the obfuscation arms race (invariant)
-  **and** the FP-tax (DS-agent 44%→3%), but inherits the semantic blind spot (all-attack recall 0.34). The
-  observation points can be combined, not transcended. (Design adversarially audited before running:
-  `results/EXPH_DESIGN_REVIEW.md`.)
+- **The hybrid fix (built + pre-registered):** a monitor that feeds an LLM judge the *decoded runtime arguments*
+  from the trace escapes the obfuscation arms race (invariant) **and** the FP-tax (DS-agent 44%→3%, `RESULTS_exp_h.md`),
+  but inherits the semantic blind spot (all-attack recall 0.34; 0.81 on attacks that actually execute harm).
+- **It's the only observation point that resists an adaptive adversary (`RESULTS_exp_e.md`):** an autonomous
+  GPT-4o/Claude attacker told the monitor's design evades the syscall monitor **5/5** (DNS-tunnel) but the hybrid
+  **0/16** (incl. that DNS-tunnel). So the hybrid is obfuscation-robust **+** FP-deployable **+** evasion-resistant
+  — combined, not transcended. (Both experiments adversarially audited before running: `results/EXPH_DESIGN_REVIEW.md`.)
 
 Feedback / "you're wrong because…" very welcome — the repo runs in one command and I'd love someone to break the
 hybrid before I build it.
