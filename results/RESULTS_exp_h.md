@@ -6,6 +6,12 @@
 > CI [0.64,0.74]→**[0.66,0.73]**, all-attack recall 0.34→**0.30**, manifested-harm recall 0.84→**0.83**,
 > text-matched base64 0.39→**0.36**, DS-agent FP-tax behavioral **44%** / hybrid **3%** (unchanged). The
 > PARTIAL verdict is stable to scale — it is not a small-sample artifact. (n=100 numbers retained below.)
+>
+> **Re-confirmed with the hardened parser (EXP-E surfaced a strace `<unfinished>`-execve split that dropped
+> piped payloads; fixed):** committed `exp_h.summary.json` is now the hardened-parser n=300 run. Verdict +
+> headline unchanged: PARTIAL; DS-agent FP-tax **44%→3%** identical; minor shifts — all-attack recall **0.34**
+> (the fix catches more piped payloads), manifested-harm **0.81**, AUROC spread **0.057** (still invariant),
+> hybrid AUROC **0.69 [0.64,0.72]**. Paper synced to these.
 
 
 **Date:** 2026-06-18. Pre-registered in `methodology/PREREG_next_level.md`; design adversarially reviewed
