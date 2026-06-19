@@ -49,3 +49,17 @@ cada_project/
 .DS_Store
 results/headtohead_runs/exp_h_traces/
 _judge_survey.txt
+
+# personal / clutter / write-ups — kept locally, never tracked
+*Resume*.docx
+~$*
+build_resume.js
+package.json
+package-lock.json
+*16384*
+_cotredhanded_text.txt
+traceaegis.txt
+HANDOFF.md
+REFERENCE_PROPOSAL.md
+REQUIREMENTS_APIS_COMPUTE.md
+paper/*.md
