@@ -1,17 +1,36 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
-title: "cada: Obfuscation-robust behavioural vs. textual monitoring of code agents"
-version: 0.1.0
-date-released: 2026-06-02
+message: "If you use this work (code, data, or findings), please cite it as below."
+title: "Choosing the Observation Point: Representation- vs. Effect-Level Monitoring of LLM Code-Agents Under Obfuscation"
+version: 0.2.0
+date-released: 2026-06-19
 authors:
   - family-names: "Jain"
     given-names: "Nishita"
     email: "upmnotion@gmail.com"
 keywords:
   - ai-safety
+  - ai-control
   - llm-agents
-  - monitoring
+  - agent-monitoring
   - obfuscation
+  - adversarial-evasion
   - ebpf
 license: MIT
 repository-code: "https://github.com/NiShITa-code/cada_project"
+abstract: >
+  A head-to-head study of representation-level (text/LLM-judge) and effect-level
+  (syscall) monitoring of LLM code-agents on real, executed attacks under an
+  obfuscation ladder. Findings: the text-monitor obfuscation collapse is a
+  capability/prompt-dependent decoding arms race; the syscall monitor's benign
+  false-positive tax scales with agent autonomy (8% to 44%); a hybrid monitor that
+  judges the decoded runtime arguments fixes both the arms race and the FP-tax
+  (44% to 3%) and resists adaptive autonomous evasion, while inheriting
+  effect-level monitoring's semantic blind spot.
+preferred-citation:
+  type: article
+  title: "Choosing the Observation Point: Representation- vs. Effect-Level Monitoring of LLM Code-Agents Under Obfuscation"
+  authors:
+    - family-names: "Jain"
+      given-names: "Nishita"
+  year: 2026
+  notes: "Preprint; update with arXiv ID / venue when available."
