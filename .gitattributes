@@ -1,0 +1,14 @@
+# Treat binary assets as binary — never apply line-ending conversion.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.pptx binary
+*.docx binary
+*.xlsx binary
+*.tgz binary
+*.gz binary
+*.zip binary
+*.lock binary
+*.ico binary
