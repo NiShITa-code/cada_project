@@ -65,4 +65,5 @@ REQUIREMENTS_APIS_COMPUTE.md
 paper/*.md
 
 # internal working notes + personal application material — kept locally, not published
-methodology/
+methodology/*
+!methodology/PREREG_next_level.md

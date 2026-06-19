@@ -1,6 +1,6 @@
 # REPRODUCE — cada head-to-head (representation- vs effect-level monitoring under obfuscation)
 
-This manifest lets a third party (or us, later) regenerate every number in `paper/cada_paper.md` from the
+This manifest lets a third party regenerate every reported number (see the findings docs in `results/`) from the
 raw inputs. It records the exact environment, commands, seeds, model, data hashes, expected numbers, and the
 known sources of non-determinism with their mitigations. (Artifact-evaluation style — USENIX/S&P/NeurIPS.)
 
