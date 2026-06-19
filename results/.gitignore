@@ -24,6 +24,8 @@ headtohead_runs/*
 !headtohead_runs/exp_h.capture.jsonl
 !headtohead_runs/exp_e.jsonl
 !headtohead_runs/exp_e.summary.json
+!headtohead_runs/exp_e_benign.jsonl
+!headtohead_runs/exp_e_benign.summary.json
 !headtohead_runs/*.summary.json
 !headtohead_runs/main.textcache.json
 !headtohead_runs/main.claude_cache.json
