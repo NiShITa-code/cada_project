@@ -65,5 +65,6 @@ REQUIREMENTS_APIS_COMPUTE.md
 paper/*.md
 
 # internal working notes + personal application material — kept locally, not published
-methodology/*
-!methodology/PREREG_next_level.md
+methodology/
+!the pre-registration (criteria fixed before running)
+cada/control_eval/

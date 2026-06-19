@@ -14,7 +14,7 @@
 > hybrid AUROC **0.69 [0.64,0.72]**. Paper synced to these.
 
 
-**Date:** 2026-06-18. Pre-registered in `methodology/PREREG_next_level.md`; design adversarially reviewed
+**Date:** 2026-06-18. Pre-registered in `the pre-registration (criteria fixed before running)`; design adversarially reviewed
 BEFORE running (`results/EXPH_DESIGN_REVIEW.md`, 4 critical fixes applied). Capture on Azure VM (780 cells,
 779 executed, 5 cell-specific timeouts — not level-correlated); raw traces saved + re-parsed locally.
 Artifacts: `exp_h.capture.jsonl`, `exp_h_traces/` (780 raw strace logs), `exp_h.summary.json`,

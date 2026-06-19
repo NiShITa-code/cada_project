@@ -1,4 +1,4 @@
-"""EXP-E — adaptive autonomous evasion of the HYBRID monitor (pre-registered, methodology/PREREG_next_level.md).
+"""EXP-E — adaptive autonomous evasion of the HYBRID monitor (pre-registered,the pre-registration (criteria fixed before running)).
 
 Does our fix (the OS-runtime-resolved-argument hybrid) survive an adaptive adversary? And IF it is evaded,
 is the null space the SAME benign-malicious semantic ambiguity that drives its FP-tax (E2 — the unification)?
