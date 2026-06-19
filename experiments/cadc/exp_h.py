@@ -1,6 +1,6 @@
 """EXP-H — the HYBRID (runtime-argument) monitor: capture phase + the effect-summary parser.
 
-Pre-registered inthe pre-registration (criteria fixed before running). Idea: from each cell's strace trace, extract the
+Pre-registered (criteria fixed before running). Idea: from each cell's strace trace, extract the
 RUNTIME-RESOLVED effects a real monitor sees (POST-decode execve argv, sensitive file opens, egress
 ports, destructive ops) as a NEUTRAL, label-free structured summary, then feed THAT to an LLM judge
 (decode-free AND semantic). This file does the VM-side capture; the judge + analysis run later/locally.
